@@ -1,0 +1,117 @@
+We know that the basis of our testing has two attributes:
+
+Null Hypothesis:H0
+Alternative Hypothesis:Ha 
+
+We have discussed in lectures are:
+
+One Population Proportion
+Difference in Population Proportions
+One Population Mean
+Difference in Population Means
+
+import statsmodels.api as sm
+import numpy as np
+import pandas as pd
+import scipy.stats.distributions as dist
+
+One Population Proportion
+Population: Parents with a teenager (age 13-18)
+Parameter of Interest: p
+Null Hypothesis: p = 0.52
+Alternative Hypthosis: p > 0.52 (note that this is a one-sided test)
+
+1018 Parents
+
+56% believe that their teenager’s lack of sleep is caused due to electronics and social media.
+n = 1018
+pnull = .52
+phat = .56
+sm.stats.proportions_ztest(phat * n, n, pnull, alternative='larger')  
+[This will give us two values one is Z value and another is p-value]
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Difference in Population Proportions
+Populations: All parents of black children age 6-18 and all parents of Hispanic children age 6-18
+Parameter of Interest: p1 - p2, where p1 = black and p2 = hispanic
+Null Hypothesis: p1 - p2 = 0
+Alternative Hypthosis: p1 - p2  ≠  = 0
+
+# Sample sizes
+n1 = 247
+n2 = 308
+
+# Number of parents reporting that their child had some swimming lessons
+y1 = 91
+y2 = 120
+
+# Estimates of the population proportions
+p1 = round(y1 / n1, 2)
+p2 = round(y2 / n2, 2)
+
+# Estimate of the combined population proportion
+phat = (y1 + y2) / (n1 + n2)
+
+# Estimate of the variance of the combined population proportion
+va = phat * (1 - phat)
+
+# Estimate of the standard error of the combined population proportion
+se = np.sqrt(va * (1 / n1 + 1 / n2))
+
+# Test statistic and its p-value
+test_stat = (p1 - p2) / se
+pvalue = 2*dist.norm.cdf(-np.abs(test_stat))
+
+# Print the test statistic its p-value
+print("Test Statistic")
+print(round(test_stat, 2))
+
+print("\nP-Value")
+print(round(pvalue, 2))
+
+--------------------------------------------------------------------------------------------------------------------------
+One Population Mean
+
+Population: All adults
+Parameter of Interest:  μ , population mean cartwheel distance. 
+Null Hypothesis:  μ  = 80 
+Alternative Hypthosis:  μ  > 80
+
+
+df = pd.read_csv("Cartwheeldata.csv")
+df.head()
+
+n = len(df)
+mean = df["CWDistance"].mean()
+sd = df["CWDistance"].std()
+(n, mean, sd)
+
+sm.stats.ztest(df["CWDistance"], value = 80, alternative = "larger")
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+Difference in Population Means
+
+Population: Adults in the NHANES data.
+Parameter of Interest:  μ1−μ2 , Body Mass Index.
+Null Hypothesis:  μ1=μ2 
+Alternative Hypthosis:  μ1≠μ2
+
+url = "nhanes_2015_2016.csv"
+da = pd.read_csv(url)
+da.head()
+
+females = da[da["RIAGENDR"] == 2]
+male = da[da["RIAGENDR"] == 1]
+
+n1 = len(females)
+mu1 = females["BMXBMI"].mean()
+sd1 = females["BMXBMI"].std()
+(n1, mu1, sd1)
+
+n2 = len(male)
+mu2 = male["BMXBMI"].mean()
+sd2 = male["BMXBMI"].std()
+(n2, mu2, sd2)
+

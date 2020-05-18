@@ -1,0 +1,72 @@
+import pandas as pd
+import numpy as np
+import matplotlib
+matplotlib.use('Agg') # workaround, there may be a better way
+import seaborn as sns
+%matplotlib inline
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+import scipy.stats.distributions as dist
+
+x = da.SMQ020x.dropna() == "Yes"
+p = x.mean()
+se = np.sqrt(.4 * (1 - .4)/ len(x))
+se
+test_stat = (p - 0.4) / se
+test_stat
+pvalue = 2 * dist.norm.cdf(-np.abs(test_stat))
+print(test_stat, pvalue)
+
+sm.stats.proportions_ztest(x.sum(), len(x), 0.4)
+sm.stats.binom_test(x.sum(), len(x), 0.4)
+
+-----------------------------------------------------------------------------------------------------
+
+Comparing means of two proportion
+
+dx = da[["SMQ020x", "RIDAGEYR", "RIAGENDRx"]].dropna()
+dx.head()
+p = dx.groupby("RIAGENDRx")["SMQ020x"].agg([lambda z: np.mean(z == "Yes"), "size"])
+p.columns = ["Smoke", "N"]
+print(p)
+
+p_comb = (dx.SMQ020x == "Yes").mean()
+va = p_comb * (1 - p_comb)
+se = np.sqrt(va * (1 / p.N.Female + 1 / p.N.Male))
+
+test_stat = (p.Smoke.Female - p.Smoke.Male) / se
+p_value = 2 * dist.norm.cdf(-np.abs(test_stat))
+(test_stat, p_value)
+
+dx_females = dx.loc[dx.RIAGENDRx == "Female", "SMQ020x"].replace({"Yes": 1, "No": 0})
+dx_females
+
+dx_males = dx.loc[dx.RIAGENDRx == "Male", "SMQ020x"].replace({"Yes": 1, "No": 0})
+dx_males
+
+sm.stats.ttest_ind(dx_females, dx_males)
+--------------------------------------------------------------------------------------------------------------------------
+Hypothesis Test Comparing Means 
+
+dx = da[["BPXSY1", "RIDAGEYR", "RIAGENDRx"]].dropna()
+dx
+
+dx = dx.loc[(dx.RIDAGEYR >= 40) & (dx.RIDAGEYR <= 50) & (dx.RIAGENDRx == "Male"), :]
+dx
+
+print(dx.BPXSY1.mean())
+sm.stats.ztest(dx.BPXSY1, value=120)
+
+dx = da[["BPXSY1", "RIDAGEYR", "RIAGENDRx"]].dropna()
+dx = dx.loc[(dx.RIDAGEYR >= 50) & (dx.RIDAGEYR <= 60), :]
+dx.head()
+
+bpx_female = dx.loc[dx.RIAGENDRx=="Female", "BPXSY1"]
+bpx_male = dx.loc[dx.RIAGENDRx=="Male", "BPXSY1"]
+print(bpx_female.mean(), bpx_male.mean())
+
+print(sm.stats.ztest(bpx_female, bpx_male))
+
+print(sm.stats.ttest_ind(bpx_female, bpx_male))
+
+
