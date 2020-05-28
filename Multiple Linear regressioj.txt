@@ -1,0 +1,49 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import pylab as pl
+import numpy as np
+%matplotlib inline
+
+Next is Download the Data 
+Understand the Data 
+
+df = pd.read_csv("FuelConsumption.csv")
+
+# take a look at the dataset
+df.head()
+
+# summarize the data
+df.describe()
+
+cdf = df[['ENGINESIZE','CYLINDERS','FUELCONSUMPTION_COMB','CO2EMISSIONS']]
+cdf.head(9)
+
+viz = cdf[['CYLINDERS','ENGINESIZE','CO2EMISSIONS','FUELCONSUMPTION_COMB']]
+viz.hist()
+plt.show()
+
+plt.scatter(cdf.FUELCONSUMPTION_COMB, cdf.CO2EMISSIONS,  color='blue')
+plt.xlabel("FUELCONSUMPTION_COMB")
+plt.ylabel("Emission")
+plt.show()
+
+
+from sklearn import linear_model
+regr = linear_model.LinearRegression()
+x = np.asanyarray(train[['ENGINESIZE','CYLINDERS','FUELCONSUMPTION_COMB']])
+y = np.asanyarray(train[['CO2EMISSIONS']])
+regr.fit (x, y)
+# The coefficients
+print ('Coefficients: ', regr.coef_)
+
+y_hat= regr.predict(test[['ENGINESIZE','CYLINDERS','FUELCONSUMPTION_COMB']])
+x = np.asanyarray(test[['ENGINESIZE','CYLINDERS','FUELCONSUMPTION_COMB']])
+y = np.asanyarray(test[['CO2EMISSIONS']])
+print("Residual sum of squares: %.2f"
+      % np.mean((y_hat - y) ** 2))
+
+# Explained variance score: 1 is perfect prediction
+print('Variance score: %.2f' % regr.score(x, y))
+
+
+
