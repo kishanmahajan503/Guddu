@@ -1,0 +1,66 @@
+import numpy as np 
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+
+my_data = pd.read_csv("drug200.csv", delimiter=",")
+my_data[0:5]
+
+X = my_data[['Age', 'Sex', 'BP', 'Cholesterol', 'Na_to_K']].values
+X[0:5]
+
+#split dataset in features and target variable
+feature_cols = ['pregnant', 'insulin', 'bmi', 'age','glucose','bp','pedigree']
+X = pima[feature_cols] # Features
+y = pima.label # Target variable
+
+Splitting Data
+To understand model performance, dividing the dataset into a training set and a test set is a good strategy.
+
+Let's split the dataset by using function train_test_split(). You need to pass 3 parameters features, target, and test_set size.
+
+# Split dataset into training set and test set
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1) # 70% training and 30% Test Data
+
+Building Decision Tree Model
+Let's create a Decision Tree Model using Scikit-learn.
+
+# Create Decision Tree classifer object
+clf = DecisionTreeClassifier()
+
+# Train Decision Tree Classifer
+clf = clf.fit(X_train,y_train)
+
+#Predict the response for test dataset
+y_pred = clf.predict(X_test)
+
+
+Evaluating Model
+Let's estimate, how accurately the classifier or model can predict the type of cultivars.
+
+Accuracy can be computed by comparing actual test set values and predicted values.
+
+# Model Accuracy, how often is the classifier correct?
+print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+
+
+Visualizing Decision Trees
+You can use Scikit-learn's export_graphviz function for display the tree within a Jupyter notebook. For plotting tree, you also need to install graphviz and pydotplus.
+
+pip install graphviz
+
+pip install pydotplus
+
+export_graphviz function converts decision tree classifier into dot file and pydotplus convert this dot file to png or displayable form on Jupyter.
+
+from sklearn.tree import export_graphviz
+from sklearn.externals.six import StringIO  
+from IPython.display import Image  
+import pydotplus
+
+dot_data = StringIO()
+export_graphviz(clf, out_file=dot_data,  
+                filled=True, rounded=True,
+                special_characters=True,feature_names = feature_cols,class_names=['0','1'])
+graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
+graph.write_png('diabetes.png')
+Image(graph.create_png())
